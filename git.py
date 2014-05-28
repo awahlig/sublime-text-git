@@ -476,3 +476,11 @@ def get_config(config):
     output = subprocess.check_output([git, 'config', '--get', config],
                                      startupinfo=startupinfo, shell=shell)
     return output.decode('utf-8').strip()
+
+
+def fix_diff(diff):
+    # Fix CRLF in diff output.
+
+    if '\r\n' in diff and 'cr-at-eol' in get_config('core.whitespace').split(','):
+        diff = diff.replace('\r\n', '\n')
+    return diff

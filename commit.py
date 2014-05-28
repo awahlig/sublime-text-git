@@ -4,7 +4,7 @@ import os
 
 import sublime
 import sublime_plugin
-from .git import GitTextCommand, GitWindowCommand, plugin_file, view_contents, _make_text_safeish
+from .git import GitTextCommand, GitWindowCommand, plugin_file, view_contents, _make_text_safeish, fix_diff
 from .add import GitAddSelectedHunkCommand
 
 history = []
@@ -94,7 +94,7 @@ class GitCommitCommand(GitWindowCommand):
             "# Please enter the commit message for your changes. Everything below",
             "# this paragraph is ignored, and an empty message aborts the commit.",
             "# Just close the window to accept your message.",
-            result.strip()
+            fix_diff(result).strip()
         ])
         template = "\n".join(self.lines)
         msg = self.window.new_file()

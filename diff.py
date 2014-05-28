@@ -1,7 +1,7 @@
 import sublime, sublime_plugin
 import os
 import re
-from .git import git_root, GitTextCommand, GitWindowCommand, do_when, goto_xy, get_config
+from .git import git_root, GitTextCommand, GitWindowCommand, do_when, goto_xy, fix_diff
 
 
 class GitDiff (object):
@@ -16,8 +16,7 @@ class GitDiff (object):
         if not result.strip():
             self.panel("No output")
             return
-        if '\r\n' in result and 'cr-at-eol' in get_config('core.whitespace').split(','):
-            result = result.replace('\r\n', '\n')
+        result = fix_diff(result)
         s = sublime.load_settings("Git.sublime-settings")
         syntax = s.get("diff_syntax", "Packages/Diff/Diff.tmLanguage")
         if s.get('diff_panel'):
