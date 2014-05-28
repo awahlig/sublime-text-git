@@ -3,7 +3,7 @@ import re
 from operator import methodcaller
 
 import sublime
-from .git import GitTextCommand, GitWindowCommand, plugin_file
+from .git import GitTextCommand, GitWindowCommand, plugin_file, fix_diff
 
 
 class GitBlameCommand(GitTextCommand):
@@ -82,7 +82,7 @@ class GitLog(object):
             self.details_done)
 
     def details_done(self, result):
-        self.scratch(result, title="Git Commit Details", syntax=plugin_file("syntax/Git Commit Message.tmLanguage"))
+        self.scratch(fix_diff(result), title="Git Commit Details", syntax=plugin_file("syntax/Git Commit Message.tmLanguage"))
 
 
 class GitLogCommand(GitLog, GitTextCommand):
@@ -118,6 +118,7 @@ class GitShow(object):
             ref=ref)
 
     def details_done(self, result, ref):
+        result = result.replace('\r\n', '\n')
         syntax = self.view.settings().get('syntax')
         self.scratch(result, title="%s:%s" % (ref, self.get_file_name()), syntax=syntax)
 
