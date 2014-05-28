@@ -450,3 +450,29 @@ class GitGitkCommand(GitTextCommand):
     def run(self, edit):
         command = ['gitk']
         self.run_command(command)
+
+
+def get_config(config):
+    # Get git config field <config>.
+
+    git = 'git'
+    s = sublime.load_settings("Git.sublime-settings")
+    us = sublime.load_settings('Preferences.sublime-settings')
+    if s.get('git_command') or us.get('git_binary'):
+        git = s.get('git_command') or us.get('git_binary')
+    elif GIT:
+        git = GIT
+
+    # Windows needs startupinfo in order to start process in background
+    startupinfo = None
+    if os.name == 'nt':
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
+    shell = False
+    if sublime.platform() == 'windows':
+        shell = True
+
+    output = subprocess.check_output([git, 'config', '--get', config],
+                                     startupinfo=startupinfo, shell=shell)
+    return output.decode('utf-8').strip()
